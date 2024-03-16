@@ -15,8 +15,27 @@ type album struct {
 
 func main() {
 	c := colly.NewCollector()
-	c.OnHTML("div.review a.review__link div.review__title ul li", func(h *colly.HTMLElement) {
+	// Get title
+	c.OnHTML("div.review", func(h *colly.HTMLElement) {
+		urls := []string {}
+		//teste := h.ChildAttrs("a", "href")
+		urls = append(urls, h.ChildAttr("a","href"))
+		// Before each url insert -> https://pitchfork.com/
+
+		for _,v := range urls{
+
+			h.Request.Visit("https://pitchfork.com"+v)
+			fmt.Println(v)
+
+		}
+	})
+
+	c.OnHTML("p.BaseWrap-sc-gjQpdd.BaseText-ewhhUZ.Rating-iATjmx.iUEiRd.hJnYqh.gtaikz", func(h *colly.HTMLElement) {
 		fmt.Println(h.Text)
+	})
+
+	c.OnRequest(func(r *colly.Request) {
+		fmt.Println("visiting", r.URL.String())
 	})
 
 	c.Visit("https://pitchfork.com/best/high-scoring-albums/")
