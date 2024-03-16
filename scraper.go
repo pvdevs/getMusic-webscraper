@@ -25,13 +25,18 @@ func main() {
 		for _,v := range urls{
 
 			h.Request.Visit("https://pitchfork.com"+v)
-			fmt.Println(v)
+			//fmt.Println(v)
 
 		}
 	})
 
-	c.OnHTML("p.BaseWrap-sc-gjQpdd.BaseText-ewhhUZ.Rating-iATjmx.iUEiRd.hJnYqh.gtaikz", func(h *colly.HTMLElement) {
-		fmt.Println(h.Text)
+	c.Wait()
+
+	c.OnHTML("div.ScoreCircle-jAxRuP p", func(h *colly.HTMLElement) {
+		contentText := h.Text
+		if contentText != ""{
+			fmt.Println(h.Text)
+		}
 	})
 
 	c.OnRequest(func(r *colly.Request) {
