@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
+	"strconv"
 )
 
 type AlbumData struct {
@@ -19,6 +21,7 @@ type AlbumData struct {
 
 type JsonResponse struct {
 	Results 	Results
+	Count		int
 }
 
 type Results struct {
@@ -71,8 +74,52 @@ type Sizes struct {
 	Standard string
 }
 
+func getAllAlbums(url string) int {
+	resp, error := http.Get(url)
+	
+	if error != nil {
+		// Handle error
+	}
+
+
+	b, err := ioutil.ReadAll(resp.Body)
+	
+	if err != nil {
+		panic(err)
+	}
+
+	var jsonResponse JsonResponse
+
+	er := json.Unmarshal([]byte(b), &jsonResponse)
+
+	if er != nil {
+		log.Fatalf("Unable to marshal JSON due to %s", er)
+	}
+
+	count := jsonResponse.Count
+
+	return count
+}
+
+func getRandomAlbumPosition(url string) string {
+	count := getAllAlbums(url)
+
+	println("total of albums:", count)
+
+	randomCount := rand.Intn(count +1)
+
+	println("this generated album position:", randomCount)
+
+	randomCountStr := strconv.Itoa(randomCount)
+
+	return randomCountStr
+}
+
 func main() {
-	resp, error := http.Get("https://pitchfork.com/api/v2/search/?genre=experimental&types=reviews&hierarchy=sections%2Freviews%2Falbums%2Cchannels%2Freviews%2Falbums&sort=publishdate%20desc%2Cposition%20asc&size=1&start=500")
+
+	position := getRandomAlbumPosition("https://pitchfork.com/api/v2/search/?genre=electronic&genre=experimental&genre=jazz&types=reviews&hierarchy=sections%2Freviews%2Falbums%2Cchannels%2Freviews%2Falbums&sort=publishdate%20desc%2Cposition%20asc&size=1&start=12")
+
+	resp, error := http.Get("https://pitchfork.com/api/v2/search/?genre=electronic&genre=experimental&genre=jazz&types=reviews&hierarchy=sections%2Freviews%2Falbums%2Cchannels%2Freviews%2Falbums&sort=publishdate%20desc%2Cposition%20asc&size=1&start="+position)
 
 	if error != nil {
 		// Handle error
