@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type AlbumData struct {
@@ -74,6 +75,7 @@ type Sizes struct {
 	Standard string
 }
 
+
 func getAllAlbums(url string) int {
 	resp, error := http.Get(url)
 	
@@ -116,6 +118,7 @@ func getRandomAlbumPosition(url string) string {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 
 	position := getRandomAlbumPosition("https://pitchfork.com/api/v2/search/?genre=electronic&genre=experimental&genre=jazz&types=reviews&hierarchy=sections%2Freviews%2Falbums%2Cchannels%2Freviews%2Falbums&sort=publishdate%20desc%2Cposition%20asc&size=1&start=12")
 
